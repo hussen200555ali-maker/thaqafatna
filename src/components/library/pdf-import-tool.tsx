@@ -196,6 +196,10 @@ export function PdfImportTool({ categories }: { categories: any[] }) {
                 </select>
               </div>
             </div>
+            <div>
+              <Label className="text-sm mb-1 block">غلاف الكتاب</Label>
+              <p className="text-xs text-stone-500">يمكن إضافة صورة الغلاف بعد الاستيراد من لوحة الإدارة</p>
+            </div>
             <div className="flex items-center gap-2 pt-2">
               <input
                 type="checkbox"

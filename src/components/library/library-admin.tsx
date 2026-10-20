@@ -25,6 +25,7 @@ interface Book {
   isFeatured: boolean;
   difficulty: string;
   createdAt: string;
+  coverImage?: string;
   category: { id: number; name: string; icon: string };
   _count: { chapters: number; reviews: number };
 }
@@ -145,10 +146,16 @@ export function LibraryAdminView({ onBack }: { onBack: () => void }) {
                 transition={{ delay: idx * 0.03 }}
               >
                 <Card className={cn(
-                  "p-4 flex items-center gap-4 border-2",
-                  book.isPublished ? "border-green-200" : "border-stone-200"
+                  "p-4 flex items-center gap-4 border-2 hover:shadow-md transition-shadow",
+                  book.isPublished ? "border-green-200 bg-white" : "border-stone-200 bg-white"
                 )}>
-                  <div className="text-3xl">📕</div>
+                  <div className="w-12 h-16 rounded-lg overflow-hidden border border-stone-200 flex-shrink-0 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                    {(book as any).coverImage ? (
+                      <img src={(book as any).coverImage} alt={book.title} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    ) : (
+                      <span className="text-xl">📕</span>
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="font-bold text-stone-800 truncate">{book.title}</h3>
@@ -214,6 +221,7 @@ function AddBookForm({ categories, onSaved }: { categories: Category[]; onSaved:
   const [readingTimeMin, setReadingTimeMin] = useState(15);
   const [isFeatured, setIsFeatured] = useState(false);
   const [keywords, setKeywords] = useState("");
+  const [coverImage, setCoverImage] = useState("");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
@@ -237,6 +245,8 @@ function AddBookForm({ categories, onSaved }: { categories: Category[]; onSaved:
           readingTimeMin: parseInt(readingTimeMin.toString()) || 15,
           isFeatured,
           keywords: kwArray,
+          coverImage: coverImage.trim(),
+          contentType: "text",
         }),
       });
       if (res.ok) {
@@ -264,6 +274,15 @@ function AddBookForm({ categories, onSaved }: { categories: Category[]; onSaved:
           <Label className="text-sm mb-1 block">المؤلف *</Label>
           <Input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="عبد الرحمن بن خلدون" />
         </div>
+      </div>
+      <div className="mb-3">
+        <Label className="text-sm mb-1 block">رابط غلاف الكتاب (صورة)</Label>
+        <Input value={coverImage} onChange={(e) => setCoverImage(e.target.value)} placeholder="https://example.com/cover.jpg أو /images/books/cover.jpg" />
+        {coverImage.trim() && (
+          <div className="mt-2 w-24 h-32 rounded-lg overflow-hidden border border-stone-200 shadow-sm">
+            <img src={coverImage.trim()} alt="معاينة الغلاف" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
         <div>
