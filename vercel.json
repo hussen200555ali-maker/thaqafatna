@@ -10,9 +10,7 @@
     "NEXT_PUBLIC_APP_NAME": "ثقافتنا"
   },
   "build": {
-    "env": {
-      "DATABASE_URL": "@database-url"
-    }
+    "env": {}
   },
   "headers": [
     {
