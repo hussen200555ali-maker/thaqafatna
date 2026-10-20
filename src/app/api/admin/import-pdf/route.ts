@@ -43,28 +43,20 @@ export async function POST(request: NextRequest) {
     let pdfInfo: any = {};
 
     try {
-      // pdf-parse@1.1.1 يعمل بشكل أفضل عند تحميله عبر require مباشر
-      // مع تجنّب ملف test الذي يحاول قراءة PDF تجريبي
-      let pdfParse: any;
-      try {
-        // محاولة 1: تحميل عادي
-        pdfParse = eval('require')('pdf-parse');
-      } catch {
-        // محاولة 2: مسار نسبي
-        const { createRequire } = await import("module");
-        const require2 = createRequire(import.meta.url);
-        pdfParse = require2('pdf-parse');
-      }
+      const { createRequire } = await import("module");
+      const require2 = createRequire(import.meta.url);
+      // @ts-ignore
+      const pdfParse = require2("pdf-parse");
       const pdfData = await pdfParse(buffer);
-      pdfText = pdfData.text;
+      pdfText = pdfData.text || "";
       pdfInfo = {
-        pages: pdfData.numpages,
+        pages: pdfData.numpages || 0,
         info: pdfData.info || {},
       };
     } catch (e) {
       console.error("PDF parse error:", e);
       return NextResponse.json(
-        { error: "تعذّر قراءة ملف PDF. تأكد من أنه ليس محميّاً بكلمة مرور." },
+        { error: "تعذّر قراءة ملف PDF. تأكد من أنه ليس محميّاً بكلمة مرور أو جرب ملف آخر." },
         { status: 500 }
       );
     }
